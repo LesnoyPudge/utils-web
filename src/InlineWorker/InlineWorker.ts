@@ -1,25 +1,28 @@
 import { T } from '@lesnoypudge/types-utils-base/namespace';
-import { DerivedPromiseControls, autoBind, derivedPromise, noop } from '@root';
+import { autoBind, derivedPromise, noop } from '@lesnoypudge/utils';
 
 
 
-type QueueItem<Args extends unknown[], Return> = (
-    DerivedPromiseControls<Return> & {
-        promise: Promise<Return>;
-        args: Args;
+type QueueItem<_Args extends unknown[], _Return> = (
+    derivedPromise.Controls<_Return> & {
+        promise: Promise<_Return>;
+        args: _Args;
     }
 );
 
-export class InlineWorker<Arg extends unknown[] = unknown[], Return = void> {
+export class InlineWorker<
+    _Arg extends unknown[] = unknown[],
+    _Return = void,
+> {
     private worker: Worker | null;
-    private queue: QueueItem<Arg, Return>[];
-    private fn: T.AnyFunction<Arg, Return>;
-    private onSuccess: T.AnyFunction<[Return]>;
+    private queue: QueueItem<_Arg, _Return>[];
+    private fn: T.AnyFunction<_Arg, _Return>;
+    private onSuccess: T.AnyFunction<[_Return]>;
     private onError: T.AnyFunction<[ErrorEvent]>;
 
     constructor(
-        fn: T.AnyFunction<Arg, Return>,
-        onSuccess: T.AnyFunction<[Return]> = noop,
+        fn: T.AnyFunction<_Arg, _Return>,
+        onSuccess: T.AnyFunction<[_Return]> = noop,
         onError: T.AnyFunction<[ErrorEvent]> = noop,
     ) {
         this.worker = null;
@@ -31,7 +34,7 @@ export class InlineWorker<Arg extends unknown[] = unknown[], Return = void> {
         autoBind(this);
     }
 
-    private createWorker(fn: T.AnyFunction<Arg, Return>) {
+    private createWorker(fn: T.AnyFunction<_Arg, _Return>) {
         const workerCode = (`
             const workerFunction = (${fn.toString()});
         
@@ -46,25 +49,25 @@ export class InlineWorker<Arg extends unknown[] = unknown[], Return = void> {
         });
         const worker = new Worker(URL.createObjectURL(workerBlob));
 
-        worker.onerror = (event) => {
+        worker.addEventListener('error', (event) => {
             this.queue[0]?.reject(event);
             this.onError(event);
-        };
+        });
 
-        worker.onmessage = (event: MessageEvent<Return>) => {
+        worker.addEventListener('message', (event: MessageEvent<_Return>) => {
             this.queue[0]?.resolve(event.data);
             this.onSuccess(event.data);
-        };
+        });
 
         return worker;
     }
 
-    start(...args: Arg): Promise<Return> {
+    start(...args: _Arg): Promise<_Return> {
         if (!this.worker) {
             this.worker = this.createWorker(this.fn);
         }
 
-        const [promise, controls] = derivedPromise<Return>();
+        const [promise, controls] = derivedPromise<_Return>();
 
         void promise.finally(() => {
             this.queue.shift();

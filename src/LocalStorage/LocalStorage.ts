@@ -1,5 +1,6 @@
 import { T } from '@lesnoypudge/types-utils-base/namespace';
-import { addEventListener, ListenerStore, parseJSON } from '@root';
+import { ListenerStore, parseJSON } from '@lesnoypudge/utils';
+import { addEventListener } from '@root';
 
 
 
@@ -54,7 +55,7 @@ export class LocalStorage<
         _DefaultValue extends undefined
             ? (_Schema[_Key] | undefined)
             : _Schema[_Key]
-    ) {
+        ) {
         const rawValue = localStorage.getItem(String(key));
         if (rawValue === null) {
             if (defaultValue !== undefined) {
@@ -65,14 +66,14 @@ export class LocalStorage<
             return defaultValue;
         }
 
-        const value = parseJSON<_Schema[_Key]>(rawValue);
+        const value = parseJSON(rawValue) as _Schema[_Key];
         if (value === undefined) {
             if (defaultValue !== undefined) {
                 this.set(key, defaultValue);
             }
             // @ts-expect-error
             return defaultValue;
-        }
+        };
 
         return value;
     }

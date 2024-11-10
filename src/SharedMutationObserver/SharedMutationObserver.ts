@@ -1,9 +1,9 @@
-import { autoBind, ListenerStore, ListenerStoreCallback } from '@root';
+import { autoBind, ListenerStore } from '@lesnoypudge/utils';
 
 
 
 type Args = [entry: MutationRecord];
-type StoreCallback = ListenerStoreCallback<Args>;
+type StoreCallback = ListenerStore.Callback<Args>;
 
 export class SharedMutationObserver {
     private listeners: ListenerStore<Node, Args>;
@@ -12,7 +12,6 @@ export class SharedMutationObserver {
 
     constructor() {
         this.listeners = new ListenerStore();
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         this.observer = new MutationObserver(this.processRecords);
         this.elementsToOptionsMap = new Map();
 

@@ -1,9 +1,9 @@
-import { autoBind, ListenerStore, ListenerStoreCallback } from '@root';
+import { autoBind, ListenerStore } from '@lesnoypudge/utils';
 
 
 
 type Args = [entry: ResizeObserverEntry];
-type StoreCallback = ListenerStoreCallback<Args>;
+type StoreCallback = ListenerStore.Callback<Args>;
 
 export class SharedResizeObserver {
     private listeners: ListenerStore<Element, Args>;

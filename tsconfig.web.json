@@ -1,7 +1,7 @@
 {
     "extends": "./tsconfig.base.json",
     "include": [
-        "**/*",
+        "src/**/*",
         "node_modules/@types"
     ],
     "exclude": [],
@@ -9,7 +9,6 @@
         "types": [
             "@lesnoypudge/types-global-base",
             "@lesnoypudge/types-global-web",
-            "@lesnoypudge/types-global-node",
             "vitest/globals",
         ],
         "paths": {

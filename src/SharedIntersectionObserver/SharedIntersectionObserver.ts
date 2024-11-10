@@ -1,9 +1,9 @@
-import { autoBind, Cache, ListenerStore, ListenerStoreCallback } from '@root';
+import { autoBind, Cache, ListenerStore } from '@lesnoypudge/utils';
 
 
 
 type Args = [entry: IntersectionObserverEntry];
-type StoreCallback = ListenerStoreCallback<Args>;
+type StoreCallback = ListenerStore.Callback<Args>;
 export class SharedIntersectionObserver {
     private listeners: ListenerStore<Element, Args>;
     private observers: Cache<IntersectionObserver>;
@@ -34,7 +34,7 @@ export class SharedIntersectionObserver {
         this.elementsToOptionsMap.set(element, options);
         const observer = this.observers.getOrSet(
             [options],
-            // eslint-disable-next-line @typescript-eslint/unbound-method
+
             () => new IntersectionObserver(this.observerCallback, options),
         );
 

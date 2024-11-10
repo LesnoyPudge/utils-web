@@ -1,4 +1,4 @@
-import { KEY } from '@root';
+import { KEY } from '@lesnoypudge/utils';
 
 
 export namespace hotKey {
@@ -25,19 +25,20 @@ export namespace hotKey {
 
 const matcher = (keyCombo: hotKey.KeyCombo) => {
     return (e: KeyboardEvent) => {
-        const activeKeys = Array.from(new Set([
+        const activeKeys = [...new Set([
             e.altKey && KEY.Alt.toLowerCase(),
             e.ctrlKey && KEY.Control.toLowerCase(),
             e.shiftKey && KEY.Shift.toLowerCase(),
             e.metaKey && KEY.Meta.toLowerCase(),
             e.key.toLowerCase(),
-        ].filter(Boolean)));
+        ].filter(Boolean))];
 
         if (activeKeys.length !== keyCombo.length) return false;
 
         const isMatch = (
-            keyCombo.map((key) => activeKeys.includes(key.toLowerCase()))
-            .find((res) => !res)
+            keyCombo.map((key) => {
+                return activeKeys.includes(key.toLowerCase());
+            }).find((res) => !res)
             ?? true
         );
 
@@ -50,7 +51,7 @@ const make: hotKey.Make = (...keyCombos) => {
         return (e) => {
             const isMatch = keyCombos.map((keyCombo) => {
                 return matcher(keyCombo)(e);
-            }).some((res) => res);
+            }).some(Boolean);
 
             if (!isMatch) return false;
 

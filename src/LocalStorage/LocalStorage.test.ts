@@ -1,4 +1,4 @@
-import { Counter } from '@root';
+import { Counter } from '@lesnoypudge/utils';
 import { LocalStorage } from './LocalStorage';
 
 

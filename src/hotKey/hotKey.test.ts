@@ -1,4 +1,5 @@
-import { Counter, KEY, hotKey, noop } from '@root';
+import { hotKey } from '@root';
+import { Counter, KEY, noop } from '@lesnoypudge/utils';
 
 
 
@@ -13,7 +14,9 @@ describe('hotKey', () => {
         expect(hotKey.make([KEY.A])(noop)(e1)).toBe(false);
         expect(hotKey.make([KEY.W, KEY.A])(noop)(e1)).toBe(false);
         expect(hotKey.make([KEY.Control, KEY.W])(noop)(e1)).toBe(false);
-        expect(hotKey.make([KEY.Control, KEY.Alt, KEY.W])(noop)(e1)).toBe(false);
+        expect(
+            hotKey.make([KEY.Control, KEY.Alt, KEY.W])(noop)(e1),
+        ).toBe(false);
 
         expect(hotKey.make([KEY.Space])(noop)(e2)).toBe(true);
         expect(hotKey.make([KEY.Control, KEY.Space])(noop)(e2)).toBe(false);
