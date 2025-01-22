@@ -4,10 +4,8 @@ import { addEventListener } from '@root';
 
 
 
-let externalListeners: ListenerStore<
-    string,
-    [unknown]
-> | undefined;
+let externalListeners: ListenerStore<string, [unknown]> | undefined;
+
 export class LocalStorage<
     _Schema extends Record<string, unknown>,
 > {
@@ -22,14 +20,19 @@ export class LocalStorage<
         this.listeners = externalListeners;
         this.cleanupCallback = addEventListener(window, 'storage', (e) => {
             // clear event
-            if (e.key === null) return this.clear();
-            // remove event
-            if (e.newValue === null) {
-                return this.remove(e.key as T.StringKeyOf<_Schema>);
+            if (e.key === null) {
+                this.listeners.triggerAll(undefined);
+                return;
             }
 
-            // @ts-expect-error
-            this.set(e.key, parseJSON(e.newValue));
+            // remove event
+            if (e.newValue === null) {
+                this.listeners.trigger(e.key, undefined);
+                return;
+            }
+
+            // set event
+            this.listeners.trigger(e.key, parseJSON(e.newValue));
         });
     }
 

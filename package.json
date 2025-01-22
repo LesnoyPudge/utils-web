@@ -1,7 +1,7 @@
 {
     "name": "@lesnoypudge/utils-web",
     "author": "LesnoyPudge",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "lesnoypudge's utils-web",
     "keywords": [
         "lesnoypudge",
@@ -26,11 +26,12 @@
     "scripts": {
         "publish": "npm publish --access public",
         "deploy": "git add . && git commit -m 'update' && git push && git status",
-        "build": "builder --file tsconfig.web.build.json",
-        "test:check": "vitest run"
+        "build": "builder --configName tsconfig.web.build.json",
+        "test:check": "vitest run",
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "@lesnoypudge/builder": "^2.0.1",
+        "@lesnoypudge/builder": "^4.0.1",
         "@lesnoypudge/eslint-config": "^5.0.0",
         "@lesnoypudge/formatter-config": "^6.1.0",
         "jsdom": "^25.0.1",
@@ -41,6 +42,6 @@
         "@lesnoypudge/types-global-base": "^4.0.0",
         "@lesnoypudge/types-global-web": "^1.0.0",
         "@lesnoypudge/types-utils-base": "^3.4.1",
-        "@lesnoypudge/utils": "^16.0.0"
+        "@lesnoypudge/utils": "^16.3.0"
     }
 }

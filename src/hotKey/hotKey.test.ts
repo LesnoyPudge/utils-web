@@ -9,6 +9,10 @@ describe('hotKey', () => {
         const e2 = new KeyboardEvent('keydown', { key: KEY.Space });
         const e3 = new KeyboardEvent('keydown', { ctrlKey: true });
         const e4 = new KeyboardEvent('keydown', {});
+        const e5 = new KeyboardEvent(
+            'keydown',
+            { key: KEY.A, shiftKey: true },
+        );
 
         expect(hotKey.make([KEY.W])(noop)(e1)).toBe(true);
         expect(hotKey.make([KEY.A])(noop)(e1)).toBe(false);
@@ -26,6 +30,9 @@ describe('hotKey', () => {
         expect(hotKey.make([KEY.Control, KEY.S])(noop)(e3)).toBe(false);
 
         expect(hotKey.make([])(noop)(e4)).toBe(true);
+
+        expect(hotKey.make([KEY.A])(noop)(e5)).toBe(false);
+        expect(hotKey.make([KEY.A, KEY.Shift])(noop)(e5)).toBe(true);
     });
 
     test('2', () => {
