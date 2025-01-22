@@ -1,4 +1,4 @@
-import { removeEventListener } from '@root';
+import { removeEventListener } from '@root/removeEventListener';
 
 
 

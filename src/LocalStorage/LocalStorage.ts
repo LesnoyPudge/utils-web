@@ -1,38 +1,43 @@
 import { T } from '@lesnoypudge/types-utils-base/namespace';
-import { ListenerStore, parseJSON } from '@lesnoypudge/utils';
-import { addEventListener } from '@root';
+import { combinedFunction, ListenerStore, parseJSON } from '@lesnoypudge/utils';
+import { addEventListener } from '@root/addEventListener';
 
 
 
-let externalListeners: ListenerStore<string, [unknown]> | undefined;
+type Store = ListenerStore<string, [any]>;
+
+let sharedStore: Store;
 
 export class LocalStorage<
     _Schema extends Record<string, unknown>,
 > {
-    private listeners;
+    private globalListeners: Store;
+    private localListeners: Store;
     private cleanupCallback;
 
     constructor() {
-        if (externalListeners === undefined) {
-            externalListeners = new ListenerStore();
+        if (sharedStore === undefined) {
+            sharedStore = new ListenerStore();
         }
 
-        this.listeners = externalListeners;
+        this.globalListeners = sharedStore;
+        this.localListeners = new ListenerStore();
+
         this.cleanupCallback = addEventListener(window, 'storage', (e) => {
             // clear event
             if (e.key === null) {
-                this.listeners.triggerAll(undefined);
+                this.localListeners.triggerAll(undefined);
                 return;
             }
 
             // remove event
             if (e.newValue === null) {
-                this.listeners.trigger(e.key, undefined);
+                this.localListeners.trigger(e.key, undefined);
                 return;
             }
 
             // set event
-            this.listeners.trigger(e.key, parseJSON(e.newValue));
+            this.localListeners.trigger(e.key, parseJSON(e.newValue));
         });
     }
 
@@ -45,7 +50,7 @@ export class LocalStorage<
         value: _Schema[_Key],
     ) {
         localStorage.setItem(key, JSON.stringify(value));
-        this.listeners.trigger(key, value);
+        this.globalListeners.trigger(key, value);
     }
 
     get<
@@ -83,19 +88,21 @@ export class LocalStorage<
 
     remove<_Key extends T.StringKeyOf<_Schema>>(key: _Key) {
         localStorage.removeItem(key);
-        this.listeners.trigger(key, undefined);
+        this.globalListeners.trigger(key, undefined);
     }
 
     clear() {
         localStorage.clear();
-        this.listeners.triggerAll(undefined);
+        this.globalListeners.triggerAll(undefined);
     }
 
     onChange<_Key extends T.StringKeyOf<_Schema>>(
         key: _Key,
         callback: (value: _Schema[_Key] | undefined) => void,
-    ) {
-        // @ts-expect-error
-        return this.listeners.add(key, callback);
+    ): VoidFunction {
+        return combinedFunction(
+            this.globalListeners.add(key, callback),
+            this.localListeners.add(key, callback),
+        );
     }
 }

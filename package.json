@@ -1,7 +1,7 @@
 {
     "name": "@lesnoypudge/utils-web",
     "author": "LesnoyPudge",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "lesnoypudge's utils-web",
     "keywords": [
         "lesnoypudge",
@@ -28,6 +28,7 @@
         "deploy": "git add . && git commit -m 'update' && git push && git status",
         "build": "builder --configName tsconfig.web.build.json",
         "test:check": "vitest run",
+        "type:check": "tsc -p tsconfig.web.build.json",
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {

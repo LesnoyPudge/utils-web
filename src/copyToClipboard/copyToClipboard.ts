@@ -1,3 +1,4 @@
+import { isHtmlElement } from "@root/isHtmlElement";
 
 
 
@@ -18,8 +19,8 @@ const fallback = (text: string) => {
     document.execCommand('copy');
     document.body.removeChild(textArea);
 
-    if (previousFocusElement) {
-        (previousFocusElement as HTMLElement).focus();
+    if (isHtmlElement(previousFocusElement)) {
+        previousFocusElement.focus();
     }
 };
 

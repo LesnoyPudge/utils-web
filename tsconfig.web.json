@@ -1,7 +1,7 @@
 {
     "extends": "./tsconfig.base.json",
     "include": [
-        "src/**/*",
+        "./src/**/*",
         "node_modules/@types"
     ],
     "exclude": [],
@@ -12,8 +12,8 @@
             "vitest/globals",
         ],
         "paths": {
-            "@root": [
-                "src/index.ts"
+            "@root/*": [
+                "./src/*"
             ],
         },
         "lib": [
