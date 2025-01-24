@@ -23,6 +23,9 @@ export namespace hotKey {
     };
 }
 
+/**
+ * Matches a keyboard event against a specified key combination.
+ */
 const matcher = (keyCombo: hotKey.KeyCombo) => {
     return (e: KeyboardEvent) => {
         const activeKeys = [...new Set([
@@ -46,6 +49,10 @@ const matcher = (keyCombo: hotKey.KeyCombo) => {
     };
 };
 
+/**
+ * Creates an action that triggers when any of the provided key
+ * combinations are matched in a keyboard event.
+ */
 const make: hotKey.Make = (...keyCombos) => {
     return (action, options) => {
         return (e) => {
@@ -66,6 +73,10 @@ const make: hotKey.Make = (...keyCombos) => {
     };
 };
 
+/**
+ * Creates a function that limits the number of handler calls to
+ * the specified maximum.
+ */
 const uniter = (maxCalls: number) => {
     return (...handlers: hotKey.Handler[]) => {
         return (e: hotKey.EventLike): boolean => {
@@ -87,6 +98,11 @@ const uniter = (maxCalls: number) => {
     };
 };
 
+/**
+ * Provides utility functions for handling hotkey combinations
+ * and event management, including action creation and handler
+ * limiting.
+ */
 export const hotKey = {
     make,
     many: uniter(Infinity),

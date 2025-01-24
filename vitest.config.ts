@@ -1,15 +1,23 @@
-import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig, mergeConfig } from 'vitest/config';
+import viteConfig from './vite.config';
 
 
 
-export default defineConfig({
-    plugins: [tsconfigPaths()],
+export default mergeConfig(viteConfig, defineConfig({
     test: {
+        include: ['./src/**/*.test.*'],
         globals: true,
-        environment: 'jsdom',
-        include: [
-            './src/**/*.test.ts',
-        ],
+        mockReset: true,
+        browser: {
+            enabled: true,
+            headless: true,
+            provider: 'playwright',
+            screenshotFailures: false,
+            instances: [
+                { browser: 'chromium' },
+                // { browser: 'firefox' },
+                // { browser: 'webkit' },
+            ],
+        },
     },
-});
+}));

@@ -6,8 +6,13 @@ import { addEventListener } from '@root/addEventListener';
 
 type Store = ListenerStore<string, [any]>;
 
-let sharedStore: Store;
+const sharedStore = new ListenerStore();
 
+/**
+ * A class for managing local storage with support for event-based
+ * listeners and change tracking. Allows setting, getting, removing
+ * items, and subscribing to changes.
+ */
 export class LocalStorage<
     _Schema extends Record<string, unknown>,
 > {
@@ -16,10 +21,6 @@ export class LocalStorage<
     private cleanupCallback;
 
     constructor() {
-        if (sharedStore === undefined) {
-            sharedStore = new ListenerStore();
-        }
-
         this.globalListeners = sharedStore;
         this.localListeners = new ListenerStore();
 

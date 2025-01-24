@@ -22,6 +22,10 @@ type RemoveEventListener = <
     fn: (e: AvailableEventNames<ProvidedElement>[EventName]) => void
 ) => void;
 
+
+/**
+ * Removes an event listener from the specified element.
+ */
 export const removeEventListener: RemoveEventListener = (
     element,
     eventName,

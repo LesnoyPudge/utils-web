@@ -30,6 +30,10 @@ type AddEventListener = <
     options?: AddEventListenerOptions,
 ) => () => void;
 
+/**
+ * Adds an event listener to the specified element and returns
+ * a cleanup function to remove it.
+ */
 export const addEventListener: AddEventListener = (
     element,
     eventName,

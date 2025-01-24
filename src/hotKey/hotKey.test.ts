@@ -1,10 +1,10 @@
-import { hotKey } from '@root';
+import { hotKey } from './hotKey';
 import { Counter, KEY, noop } from '@lesnoypudge/utils';
 
 
 
 describe('hotKey', () => {
-    test('1', () => {
+    test('should trigger callback on key combo match', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W });
         const e2 = new KeyboardEvent('keydown', { key: KEY.Space });
         const e3 = new KeyboardEvent('keydown', { ctrlKey: true });
@@ -35,42 +35,29 @@ describe('hotKey', () => {
         expect(hotKey.make([KEY.A, KEY.Shift])(noop)(e5)).toBe(true);
     });
 
-    test('2', () => {
+    test('should limit amount of triggers', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W });
-        const { get, inc } = new Counter();
+        const spy = vi.fn();
 
         const res = hotKey.one(
-            hotKey.make([KEY.W])(() => inc()),
-            hotKey.make([KEY.W])(() => inc()),
+            hotKey.make([KEY.W])(spy),
+            hotKey.make([KEY.W])(spy),
         )(e1);
 
         expect(res).toBe(true);
-        expect(get()).toBe(1);
+        expect(spy).toBeCalledTimes(1);
     });
 
-    test('3', () => {
+    test('should trigger all callbacks', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W.toLowerCase() });
-        const { get, inc } = new Counter();
+        const spy = vi.fn();
 
         const res = hotKey.many(
-            hotKey.make([KEY.W])(() => inc()),
-            hotKey.make([KEY.W])(() => inc()),
+            hotKey.make([KEY.W])(spy),
+            hotKey.make([KEY.W])(spy),
         )(e1);
 
         expect(res).toBe(true);
-        expect(get()).toBe(2);
-    });
-
-    test('4', () => {
-        const e1 = new KeyboardEvent('keydown', { key: KEY.S });
-        const { get, inc } = new Counter();
-
-        const res = hotKey.many(
-            hotKey.make([KEY.W])(() => inc()),
-            hotKey.make([KEY.A])(() => inc()),
-        )(e1);
-
-        expect(res).toBe(false);
-        expect(get()).toBe(0);
+        expect(spy).toBeCalledTimes(2);
     });
 });

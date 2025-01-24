@@ -2,14 +2,29 @@ import { autoBind, Cache, ListenerStore } from '@lesnoypudge/utils';
 
 
 
-type Args = [entry: IntersectionObserverEntry];
-type StoreCallback = ListenerStore.Callback<Args>;
+export namespace SharedIntersectionObserver {
+    export type Args = [entry: IntersectionObserverEntry];
+
+    export type StoreCallback = ListenerStore.Callback<Args>;
+
+    export type Options = IntersectionObserverInit;
+}
+
+/**
+ * A class for managing intersection observers and their listeners.
+ * Allows observing, unobserving elements, and disconnecting all
+ * observers.
+ */
 export class SharedIntersectionObserver {
-    private listeners: ListenerStore<Element, Args>;
+    private listeners: ListenerStore<
+        Element,
+        SharedIntersectionObserver.Args
+    >;
+
     private observers: Cache<IntersectionObserver>;
     private elementsToOptionsMap: Map<
         Node,
-        IntersectionObserverInit | undefined
+        SharedIntersectionObserver.Options | undefined
     >;
 
     constructor() {
@@ -28,13 +43,12 @@ export class SharedIntersectionObserver {
 
     observe(
         element: Element,
-        listener: StoreCallback,
-        options?: IntersectionObserverInit,
+        listener: SharedIntersectionObserver.StoreCallback,
+        options?: SharedIntersectionObserver.Options,
     ) {
         this.elementsToOptionsMap.set(element, options);
         const observer = this.observers.getOrSet(
             [options],
-
             () => new IntersectionObserver(this.observerCallback, options),
         );
 
@@ -44,7 +58,7 @@ export class SharedIntersectionObserver {
 
     unobserve(
         element: Element,
-        listener: StoreCallback,
+        listener: SharedIntersectionObserver.StoreCallback,
     ) {
         const options = this.elementsToOptionsMap.get(element);
         const observer = this.observers.get([options]);

@@ -1,19 +1,46 @@
+import { T } from '@lesnoypudge/types-utils-base/namespace';
 import { autoBind, ListenerStore } from '@lesnoypudge/utils';
 
 
 
-type Args = [entry: MutationRecord];
-type StoreCallback = ListenerStore.Callback<Args>;
+export namespace SharedMutationObserver {
+    type RequiredOptions = T.RequireAtLeastOne<Pick<
+        MutationObserverInit,
+        'attributes' | 'childList' | 'characterData'
+    >>;
 
+    export type Args = [entry: MutationRecord];
+
+    export type StoreCallback = ListenerStore.Callback<Args>;
+
+    export type Options = (
+        RequiredOptions
+        & T.Except<MutationObserverInit, keyof RequiredOptions>
+    );
+}
+
+/**
+ * A class for managing mutation observers and their listeners.
+ * Allows observing, unobserving elements, and disconnecting all
+ * observers.
+ */
 export class SharedMutationObserver {
-    private listeners: ListenerStore<Node, Args>;
+    private listeners: ListenerStore<
+        Node,
+        SharedMutationObserver.Args
+    >;
+
     private observer: MutationObserver;
-    private elementsToOptionsMap: Map<Node, MutationObserverInit | undefined>;
+    private elementsToOptionsMap: Map<
+        Node,
+        SharedMutationObserver.Options
+    >;
 
     constructor() {
         this.listeners = new ListenerStore();
-        this.observer = new MutationObserver(this.processRecords);
         this.elementsToOptionsMap = new Map();
+
+        this.observer = new MutationObserver(this.processRecords.bind(this));
 
         autoBind(this);
     }
@@ -26,8 +53,8 @@ export class SharedMutationObserver {
 
     observe(
         element: Element,
-        listener: StoreCallback,
-        options?: MutationObserverInit,
+        listener: SharedMutationObserver.StoreCallback,
+        options: SharedMutationObserver.Options,
     ) {
         this.elementsToOptionsMap.set(element, options);
         this.listeners.add(element, listener);
@@ -36,7 +63,7 @@ export class SharedMutationObserver {
 
     unobserve(
         element: Element,
-        listener: StoreCallback,
+        listener: SharedMutationObserver.StoreCallback,
     ) {
         this.listeners.remove(element, listener);
         this.elementsToOptionsMap.delete(element);

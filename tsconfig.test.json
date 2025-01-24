@@ -1,0 +1,16 @@
+{
+    "extends": "./tsconfig.web.json",
+    "include": [
+        "./src/**/*.test.*",
+        "node_modules/@types",
+    ],
+    "exclude": [],
+    "compilerOptions": {
+        "types": [
+            "@lesnoypudge/types-global-base",
+            "@lesnoypudge/types-global-web",
+            "vitest/globals",
+            "@vitest/browser/providers/playwright",
+        ]
+    }
+}

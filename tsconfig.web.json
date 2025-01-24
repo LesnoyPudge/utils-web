@@ -4,12 +4,13 @@
         "./src/**/*",
         "node_modules/@types"
     ],
-    "exclude": [],
+    "exclude": [
+        "./src/**/*.test.*"
+    ],
     "compilerOptions": {
         "types": [
             "@lesnoypudge/types-global-base",
             "@lesnoypudge/types-global-web",
-            "vitest/globals",
         ],
         "paths": {
             "@root/*": [

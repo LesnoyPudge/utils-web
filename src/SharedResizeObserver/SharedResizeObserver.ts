@@ -2,11 +2,25 @@ import { autoBind, ListenerStore } from '@lesnoypudge/utils';
 
 
 
-type Args = [entry: ResizeObserverEntry];
-type StoreCallback = ListenerStore.Callback<Args>;
+export namespace SharedResizeObserver {
+    export type Args = [entry: ResizeObserverEntry];
 
+    export type StoreCallback = ListenerStore.Callback<Args>;
+
+    export type Options = ResizeObserverOptions;
+}
+
+/**
+ * A class for managing resize observers and their listeners.
+ * Allows observing, unobserving elements, and disconnecting the
+ * resize observer.
+ */
 export class SharedResizeObserver {
-    private listeners: ListenerStore<Element, Args>;
+    private listeners: ListenerStore<
+        Element,
+        SharedResizeObserver.Args
+    >;
+
     private observer: ResizeObserver;
 
     constructor() {
@@ -22,14 +36,17 @@ export class SharedResizeObserver {
 
     observe(
         element: Element,
-        listener: StoreCallback,
-        options?: ResizeObserverOptions,
+        listener: SharedResizeObserver.StoreCallback,
+        options?: SharedResizeObserver.Options,
     ) {
         this.listeners.add(element, listener);
         this.observer.observe(element, options);
     }
 
-    unobserve(element: Element, listener: StoreCallback) {
+    unobserve(
+        element: Element,
+        listener: SharedResizeObserver.StoreCallback,
+    ) {
         this.listeners.remove(element, listener);
         this.observer.unobserve(element);
     }
