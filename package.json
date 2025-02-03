@@ -1,7 +1,7 @@
 {
     "name": "@lesnoypudge/utils-web",
     "author": "LesnoyPudge",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "lesnoypudge's utils-web",
     "keywords": [
         "lesnoypudge",
@@ -18,7 +18,6 @@
     "scripts": {
         "publish": "npm publish --access public",
         "deploy": "git add . && git commit -m 'update' && git push && git status",
-        "buildOLD": "builder --configName tsconfig.web.build.json",
         "build": "vite build",
         "test:check": "vitest --run",
         "test:watch": "vitest",
@@ -27,13 +26,13 @@
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "@lesnoypudge/builder": "^4.0.1",
-        "@lesnoypudge/eslint-config": "^6.1.0",
+        "@lesnoypudge/builder": "^5.0.1",
+        "@lesnoypudge/eslint-config": "^11.0.0",
         "@lesnoypudge/formatter-config": "^8.0.0",
         "@testing-library/dom": "^10.4.0",
         "@vitest/browser": "^3.0.4",
         "glob": "^11.0.1",
-        "playwright": "^1.50.0",
+        "playwright": "^1.50.1",
         "vite": "^6.0.11",
         "vite-plugin-checker": "^0.8.0",
         "vite-plugin-dts": "^4.5.0",
@@ -45,6 +44,6 @@
         "@lesnoypudge/types-global-base": "^4.0.0",
         "@lesnoypudge/types-global-web": "^1.0.0",
         "@lesnoypudge/types-utils-base": "^3.4.1",
-        "@lesnoypudge/utils": "^16.3.0"
+        "@lesnoypudge/utils": "^17.1.0"
     }
 }

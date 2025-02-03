@@ -3,6 +3,8 @@
     "include": [
         "./src/**/*.test.*",
         "node_modules/@types",
+        "./vitest.config.ts",
+        "./vite.config.ts",
     ],
     "exclude": [],
     "compilerOptions": {

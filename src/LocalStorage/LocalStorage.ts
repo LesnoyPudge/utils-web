@@ -1,45 +1,76 @@
+/* eslint-disable unicorn/consistent-function-scoping */
 import { T } from '@lesnoypudge/types-utils-base/namespace';
-import { combinedFunction, ListenerStore, parseJSON } from '@lesnoypudge/utils';
+import { autoBind, combinedFunction, ListenerStore, parseJSON, patch } from '@lesnoypudge/utils';
 import { addEventListener } from '@root/addEventListener';
 
 
-
-type Store = ListenerStore<string, [any]>;
-
-const sharedStore = new ListenerStore();
 
 /**
  * A class for managing local storage with support for event-based
  * listeners and change tracking. Allows setting, getting, removing
  * items, and subscribing to changes.
+ * Returned values are parsed.
  */
 export class LocalStorage<
     _Schema extends Record<string, unknown>,
 > {
-    private globalListeners: Store;
-    private localListeners: Store;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private listeners: ListenerStore<string, [any]>;
     private cleanupCallback;
 
     constructor() {
-        this.globalListeners = sharedStore;
-        this.localListeners = new ListenerStore();
+        this.listeners = new ListenerStore();
 
-        this.cleanupCallback = addEventListener(window, 'storage', (e) => {
+        const updateFn = (
+            key: string | null,
+            newValue: string | null,
+        ) => {
             // clear event
-            if (e.key === null) {
-                this.localListeners.triggerAll(undefined);
+            if (key === null) {
+                this.listeners.triggerAll(undefined);
                 return;
             }
 
             // remove event
-            if (e.newValue === null) {
-                this.localListeners.trigger(e.key, undefined);
+            if (newValue === null) {
+                this.listeners.trigger(key, undefined);
                 return;
             }
 
             // set event
-            this.localListeners.trigger(e.key, parseJSON(e.newValue));
-        });
+            this.listeners.trigger(key, parseJSON(newValue));
+        };
+
+        this.cleanupCallback = combinedFunction(
+            patch(localStorage, 'setItem', (fn) => {
+                return (key, value) => {
+                    fn(key, value);
+                    updateFn(key, value);
+                };
+            }),
+
+            patch(localStorage, 'removeItem', (fn) => {
+                return (key) => {
+                    fn(key);
+                    // remove event
+                    updateFn(key, null);
+                };
+            }),
+
+            patch(localStorage, 'clear', (fn) => {
+                return () => {
+                    fn();
+                    // clear event
+                    updateFn(null, null);
+                };
+            }),
+
+            addEventListener(window, 'storage', (e) => {
+                updateFn(e.key, e.newValue);
+            }),
+        );
+
+        autoBind(this);
     }
 
     cleanup() {
@@ -51,7 +82,6 @@ export class LocalStorage<
         value: _Schema[_Key],
     ) {
         localStorage.setItem(key, JSON.stringify(value));
-        this.globalListeners.trigger(key, value);
     }
 
     get<
@@ -60,50 +90,27 @@ export class LocalStorage<
     >(
         key: _Key,
         defaultValue?: _DefaultValue,
-    ): (
-        _DefaultValue extends undefined
-            ? (_Schema[_Key] | undefined)
-            : _Schema[_Key]
-        ) {
+    ): _Schema[_Key] | undefined {
         const rawValue = localStorage.getItem(String(key));
-        if (rawValue === null) {
-            if (defaultValue !== undefined) {
-                this.set(key, defaultValue);
-            }
+        if (rawValue === null) return defaultValue;
 
-            // @ts-expect-error
-            return defaultValue;
-        }
+        const value = parseJSON(rawValue) as _Schema[_Key] | undefined;
 
-        const value = parseJSON(rawValue) as _Schema[_Key];
-        if (value === undefined) {
-            if (defaultValue !== undefined) {
-                this.set(key, defaultValue);
-            }
-            // @ts-expect-error
-            return defaultValue;
-        };
-
-        return value;
+        return value ?? defaultValue;
     }
 
     remove<_Key extends T.StringKeyOf<_Schema>>(key: _Key) {
         localStorage.removeItem(key);
-        this.globalListeners.trigger(key, undefined);
     }
 
     clear() {
         localStorage.clear();
-        this.globalListeners.triggerAll(undefined);
     }
 
     onChange<_Key extends T.StringKeyOf<_Schema>>(
         key: _Key,
         callback: (value: _Schema[_Key] | undefined) => void,
     ): VoidFunction {
-        return combinedFunction(
-            this.globalListeners.add(key, callback),
-            this.localListeners.add(key, callback),
-        );
+        return this.listeners.add(key, callback);
     }
 }

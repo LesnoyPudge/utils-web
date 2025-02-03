@@ -1,3 +1,4 @@
+import { sleep } from '@lesnoypudge/utils';
 import { LocalStorage } from './LocalStorage';
 
 
@@ -20,10 +21,6 @@ describe('LocalStorage', () => {
 
         expect(storage.get('testValue')).toBe(undefined);
         expect(storage.get('testValue', 4)).toBe(4);
-        expect(storage.get('testValue')).toBe(4);
-
-        storage.remove('testValue');
-
         expect(storage.get('testValue')).toBe(undefined);
 
         storage.set('testValue', 5);
@@ -34,7 +31,7 @@ describe('LocalStorage', () => {
 
         expect(storage.get('testValue')).toBe(undefined);
 
-        expect(spy).toBeCalledTimes(4);
+        expect(spy).toBeCalledTimes(2);
     });
 
     test('should work across all instances', () => {
@@ -48,5 +45,19 @@ describe('LocalStorage', () => {
 
         expect(storage2.get('testValue')).toBe(10);
         expect(spy).toBeCalledTimes(1);
+    });
+
+    test('should work with native localStorage', async () => {
+        const storage = new LocalStorage<TestStorage>();
+        const spy = vi.fn();
+
+        storage.onChange('testValue', spy);
+
+        localStorage.setItem('testValue', '10');
+
+        await vi.waitFor(() => {
+            expect(storage.get('testValue')).toBe(10);
+            expect(spy).toBeCalledTimes(1);
+        });
     });
 });
