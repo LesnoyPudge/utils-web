@@ -1,4 +1,3 @@
-import { sleep } from '@lesnoypudge/utils';
 import { LocalStorage } from './LocalStorage';
 
 
@@ -30,7 +29,6 @@ describe('LocalStorage', () => {
         storage.clear();
 
         expect(storage.get('testValue')).toBe(undefined);
-
         expect(spy).toBeCalledTimes(2);
     });
 

@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import { T } from '@lesnoypudge/types-utils-base/namespace';
 import { autoBind, combinedFunction, ListenerStore, parseJSON, patch } from '@lesnoypudge/utils';
 import { addEventListener } from '@root/addEventListener';
@@ -41,28 +40,45 @@ export class LocalStorage<
             this.listeners.trigger(key, parseJSON(newValue));
         };
 
+        const prototype = Object.getPrototypeOf(localStorage) as Storage;
+
         this.cleanupCallback = combinedFunction(
-            patch(localStorage, 'setItem', (fn) => {
-                return (key, value) => {
-                    fn(key, value);
-                    updateFn(key, value);
-                };
+            patch({
+                objectToPatch: prototype,
+                providedThis: localStorage,
+                methodName: 'setItem',
+                patchedMethodFactory: (fn) => {
+                    return (key, value) => {
+                        fn(key, value);
+                        updateFn(key, value);
+                    };
+                },
             }),
 
-            patch(localStorage, 'removeItem', (fn) => {
-                return (key) => {
-                    fn(key);
-                    // remove event
-                    updateFn(key, null);
-                };
+            patch({
+                objectToPatch: prototype,
+                providedThis: localStorage,
+                methodName: 'removeItem',
+                patchedMethodFactory: (fn) => {
+                    return (key) => {
+                        fn(key);
+                        // remove event
+                        updateFn(key, null);
+                    };
+                },
             }),
 
-            patch(localStorage, 'clear', (fn) => {
-                return () => {
-                    fn();
-                    // clear event
-                    updateFn(null, null);
-                };
+            patch({
+                objectToPatch: prototype,
+                providedThis: localStorage,
+                methodName: 'clear',
+                patchedMethodFactory: (fn) => {
+                    return () => {
+                        fn();
+                        // clear event
+                        updateFn(null, null);
+                    };
+                },
             }),
 
             addEventListener(window, 'storage', (e) => {
