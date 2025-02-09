@@ -30,7 +30,6 @@ const fallback = (text: string) => {
  * the Clipboard API is unavailable.
  */
 export const copyToClipboard = (text: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!navigator.clipboard) return fallback(text);
 
     navigator.clipboard.writeText(text).catch(() => fallback(text));

@@ -1,10 +1,10 @@
 import { hotKey } from './hotKey';
-import { Counter, KEY, noop } from '@lesnoypudge/utils';
+import { KEY, noop } from '@lesnoypudge/utils';
 
 
 
 describe('hotKey', () => {
-    test('should trigger callback on key combo match', () => {
+    it('should trigger callback on key combo match', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W });
         const e2 = new KeyboardEvent('keydown', { key: KEY.Space });
         const e3 = new KeyboardEvent('keydown', { ctrlKey: true });
@@ -35,7 +35,7 @@ describe('hotKey', () => {
         expect(hotKey.make([KEY.A, KEY.Shift])(noop)(e5)).toBe(true);
     });
 
-    test('should limit amount of triggers', () => {
+    it('should limit amount of triggers', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W });
         const spy = vi.fn();
 
@@ -48,7 +48,7 @@ describe('hotKey', () => {
         expect(spy).toBeCalledTimes(1);
     });
 
-    test('should trigger all callbacks', () => {
+    it('should trigger all callbacks', () => {
         const e1 = new KeyboardEvent('keydown', { key: KEY.W.toLowerCase() });
         const spy = vi.fn();
 

@@ -4,6 +4,16 @@ import { addEventListener } from '@root/addEventListener';
 
 
 
+type GetGetReturnType<
+    _Schema extends Record<string, unknown>,
+    _Key extends T.StringKeyOf<_Schema>,
+    _DefaultValue extends (_Schema[_Key] | undefined),
+> = (
+    _DefaultValue extends undefined
+        ? (_Schema[_Key] | undefined)
+        : _DefaultValue
+);
+
 /**
  * A class for managing local storage with support for event-based
  * listeners and change tracking. Allows setting, getting, removing
@@ -106,13 +116,17 @@ export class LocalStorage<
     >(
         key: _Key,
         defaultValue?: _DefaultValue,
-    ): _Schema[_Key] | undefined {
+    ): GetGetReturnType<_Schema, _Key, _DefaultValue> {
         const rawValue = localStorage.getItem(String(key));
-        if (rawValue === null) return defaultValue;
+        if (rawValue === null) return defaultValue as (
+            GetGetReturnType<_Schema, _Key, _DefaultValue>
+        );
 
         const value = parseJSON(rawValue) as _Schema[_Key] | undefined;
 
-        return value ?? defaultValue;
+        return (value ?? defaultValue) as (
+            GetGetReturnType<_Schema, _Key, _DefaultValue>
+        );
     }
 
     remove<_Key extends T.StringKeyOf<_Schema>>(key: _Key) {

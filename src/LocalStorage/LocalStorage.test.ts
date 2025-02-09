@@ -5,6 +5,7 @@ import { LocalStorage } from './LocalStorage';
 type TestStorage = {
     testValue: number;
     someValue: null;
+    bool: boolean;
 };
 
 beforeEach(() => {
@@ -12,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('LocalStorage', () => {
-    test('should update value and trigger onChange callback', () => {
+    it('should update value and trigger onChange callback', () => {
         const storage = new LocalStorage<TestStorage>();
         const spy = vi.fn();
 
@@ -32,7 +33,7 @@ describe('LocalStorage', () => {
         expect(spy).toBeCalledTimes(2);
     });
 
-    test('should work across all instances', () => {
+    it('should work across all instances', () => {
         const storage1 = new LocalStorage<TestStorage>();
         const storage2 = new LocalStorage<TestStorage>();
         const spy = vi.fn();
@@ -45,7 +46,7 @@ describe('LocalStorage', () => {
         expect(spy).toBeCalledTimes(1);
     });
 
-    test('should work with native localStorage', async () => {
+    it('should work with native localStorage', async () => {
         const storage = new LocalStorage<TestStorage>();
         const spy = vi.fn();
 
@@ -57,5 +58,11 @@ describe('LocalStorage', () => {
             expect(storage.get('testValue')).toBe(10);
             expect(spy).toBeCalledTimes(1);
         });
+    });
+
+    it('should return correct default type', () => {
+        const storage = new LocalStorage<TestStorage>();
+
+        expectTypeOf(storage.get('bool', true)).toBeBoolean();
     });
 });
