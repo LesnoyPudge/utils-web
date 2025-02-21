@@ -16,7 +16,7 @@
     "types": "./build/index.d.ts",
     "main": "./build/index.js",
     "scripts": {
-        "publish": "npm publish --access public",
+        "publish:npm": "npm publish --access public",
         "deploy": "git add . && git commit -m 'update' && git push && git status",
         "build": "vite build",
         "test:check": "vitest --run",
