@@ -1,7 +1,7 @@
 {
     "name": "@lesnoypudge/utils-web",
     "author": "LesnoyPudge",
-    "version": "3.0.2",
+    "version": "3.1.0",
     "description": "lesnoypudge's utils-web",
     "keywords": [
         "lesnoypudge",
@@ -44,6 +44,6 @@
         "@lesnoypudge/types-global-base": "^4.0.0",
         "@lesnoypudge/types-global-web": "^1.0.0",
         "@lesnoypudge/types-utils-base": "^3.4.1",
-        "@lesnoypudge/utils": "^18.0.0"
+        "@lesnoypudge/utils": "^19.1.0"
     }
 }
