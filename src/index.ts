@@ -1,5 +1,7 @@
 export * from './addEventListener';
 export * from './copyToClipboard';
+export * from './createDefer';
+export * from './defer';
 export * from './focusVisibleManager';
 export * from './hotKey';
 export * from './InlineWorker';
