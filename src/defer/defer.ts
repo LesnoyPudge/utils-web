@@ -3,13 +3,25 @@ import { createDefer } from '@root/createDefer';
 
 
 /**
- * Executes provided callback when main thread is idle.
+ * Returns promise that resolves when provided callback is executed.
+ * Execution happens when main thread is idle.
  */
-export const defer = (
-    fn: VoidFunction,
+export const defer = <_Return>(
+    fn: () => _Return | Promise<_Return>,
     options?: createDefer.Options,
-) => {
-    const { startDefer } = createDefer(fn, options);
+): Promise<_Return> => {
+    return new Promise((resolve) => {
+        const { startDefer } = createDefer(() => {
+            const result = fn();
 
-    startDefer();
+            if (result instanceof Promise) {
+                void result.then(resolve);
+                return;
+            }
+
+            resolve(result);
+        }, options);
+
+        startDefer();
+    });
 };
