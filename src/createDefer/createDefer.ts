@@ -21,7 +21,7 @@ export namespace createDefer {
 }
 
 /**
- * Creates controls for deferred execution of provided callback.
+ * Creates controls for the deferred execution of the provided callback.
  */
 export const createDefer = (
     fn: VoidFunction,
